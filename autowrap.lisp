@@ -20,7 +20,20 @@
      collect (list regex nil (list 'make-prefix-cutter idx))))
 
 
-(defmacro c-include (header system-name &key package sources definitions symbol-exceptions symbol-regex)
+(defun parse-sysincludes (system includes)
+  (loop for include in includes
+     collect (if (stringp include)
+                 include
+                 (namestring
+                  (asdf:component-pathname
+                   (asdf:find-component (asdf:find-system system) include))))))
+
+
+(defmacro c-include (header system-name &body body
+                     &key package sources definitions
+                       symbol-exceptions symbol-regex
+                       sysincludes)
+  (declare (ignore body))
   `(autowrap:c-include
     ',(list system-name header)
     :spec-path ',(list system-name :spec)
@@ -28,7 +41,8 @@
     :include-arch ,(append #+unix '("x86_64-pc-linux-gnu" "i686-pc-linux-gnu")
                             #+windows ("x86_64-pc-windows-" "i686-pc-windows")
                             #+windows ("x86_64-apple-darwin" "i686-apple-darwin"))
-    :sysincludes ',(append #+unix
+    :sysincludes ',(append (parse-sysincludes system-name sysincludes)
+                           #+unix
                            (list "/usr/include/x86_64-pc-linux-gnu/")
                            #+windows
                            (list "c:/msys64/mingw64/x86_64-w64-mingw32/include/"
