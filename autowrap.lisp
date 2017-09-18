@@ -39,8 +39,8 @@
     :spec-path ',(list system-name :spec)
     :definition-package ,package
     :include-arch ,(append #+unix '("x86_64-pc-linux-gnu" "i686-pc-linux-gnu")
-                            #+windows ("x86_64-pc-windows-" "i686-pc-windows")
-                            #+windows ("x86_64-apple-darwin" "i686-apple-darwin"))
+                            #+windows '("x86_64-pc-windows-" "i686-pc-windows")
+                            #+darwin '("x86_64-apple-darwin" "i686-apple-darwin"))
     :sysincludes ',(append (parse-sysincludes system-name sysincludes)
                            #+unix
                            (list "/usr/include/x86_64-pc-linux-gnu/")
